@@ -1,0 +1,7 @@
+build/
+======
+
+[WARNING]
+This directory is under configuration management. Don't use it.
+
+Contains transient artifacts generated internally.
