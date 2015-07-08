@@ -1,0 +1,7 @@
+# ignore everything in build/...
+*
+
+# ... but the ignores and README.
+!/.gitignore
+!/README.adoc
+
