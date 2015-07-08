@@ -16,6 +16,5 @@ if [ $? -eq 0 ]; then
     echo "[BUILDING]"
     CMD="colorgo build"
 fi
-mkdir -p build || exit 1
 $CMD $GL_BUILD_ARGS && echo "[COMPLETE]"
 

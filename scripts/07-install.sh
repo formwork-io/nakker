@@ -16,6 +16,5 @@ if [ $? -eq 0 ]; then
     echo "[INSTALLING]"
     CMD="colorgo install"
 fi
-mkdir -p build || exit 1
 $CMD $GL_INSTALL_ARGS && echo "[COMPLETE]"
 
