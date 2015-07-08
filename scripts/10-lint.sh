@@ -11,11 +11,15 @@ source "$DIR"/env.sh || exit 1
 cd "$DIR" || exit 1
 
 CMD="golint"
-which $CMD >/dev/null
+which $CMD >/dev/null 2>&1
 if [ $? -eq 1 ]; then
     echo "$CMD: command not found" >&2
     exit 1
 fi
 echo "[LINTING]"
-find -name "*.go" -exec $CMD {} \;
+for x in *.go; do
+    echo -e "[\e[1m${x}\e[0m]"
+    golint "$x"
+    echo
+done
 
