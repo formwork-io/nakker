@@ -21,14 +21,13 @@
 
 package main
 
-import (
-	"fmt"
-	zmq "github.com/pebbe/zmq4"
-	"os"
-	"os/signal"
-	"syscall"
-	"time"
-)
+import "fmt"
+import zmq "github.com/pebbe/zmq4"
+import "os"
+import "os/signal"
+import "syscall"
+import "time"
+import . "github.com/formwork-io/greenline/internal"
 
 const (
 	MsgEvent = 1 << iota
@@ -100,8 +99,16 @@ func main() {
 		for {
 			sockets, err := poller.Poll(-1)
 			if err != nil {
+				// get EINTR while polling?
+				if IsEINTR(err) {
+					// Continue polling; EINTR is normal for us...
+					continue
+					// ... with our use of signals.
+				}
+
+				// otherwise shutdown
 				readychan <- false
-				return
+				break
 			}
 			if len(sockets) != 0 {
 				readychan <- true
@@ -169,49 +176,6 @@ func main() {
 			pollchan <- true
 		}
 	}
-	/*
-		for {
-			sockets, err := poller.Poll(1)
-			if err != nil {
-				fmt.Printf("poll returned err: %s", err.Error())
-				continue
-			}
-			//fmt.Printf("%d\n", len(sockets))
-
-			// for-select a mainchan handling MSG_EVENT/BIN_EVENT
-			// delivery and react accordingly.
-			//
-			// if a MSG_EVENT is delivered over the channel, range
-			// the sockets...
-			//
-			// if a BIN_EVENT is delivered over the channel, restart
-			// greenline
-
-			for _, polled := range sockets {
-				socket := polled.Socket
-				paired_socket := socket_pairs[socket]
-				name := socket_names[socket]
-
-				pprint("processing message for %s", name)
-				for {
-					msg, err := socket.Recv(0)
-					if err != nil {
-						die("failed on receive: %s", err.Error())
-					}
-					more, err := socket.GetRcvmore()
-					if err != nil {
-						die("failed on receive more: %s", err.Error())
-					}
-					if more {
-						paired_socket.Send(msg, zmq.SNDMORE)
-					} else {
-						paired_socket.Send(msg, 0)
-						break
-					}
-				}
-			}
-		}
-	*/
 }
 
 func railToPubSub(rail *rail, poller *zmq.Poller) (ingress *zmq.Socket, egress *zmq.Socket) {
