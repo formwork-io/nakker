@@ -9,8 +9,8 @@ export SCRIPT_HELP="Run tests."
 dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"/../
 source "$dir"/env.sh || exit 1
 cd "$dir" || exit 1
-assert-env-or-die BUILD
-cmd="go test -o $BUILD/tests $@"
+assert-env-or-die TEST_OUTPUT
+cmd="go test -o \"$TEST_OUTPUT\" $@"
 
 subdirs=($(find -name "*.go" -exec dirname {} \; | sort | uniq))
 for subdir in ${subdirs[@]}; do

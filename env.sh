@@ -33,6 +33,7 @@ default GL_RAIL_3_EGRESS_PORT   9009
 
 ### PATHS ###
 default BUILD           "$DIR"/build
+default TEST_OUTPUT     "$BUILD/tests"
 
 ### GOLANG ###
 default GL_BUILD_ARGS   "-o $BUILD/greenline"
