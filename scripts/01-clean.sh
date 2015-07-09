@@ -9,6 +9,8 @@ export SCRIPT_HELP="Cleans the build."
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"/../
 source "$DIR"/env.sh || exit 1
 cd "$DIR" || exit 1
+assert-env-or-die BUILD_OUTPUT
+assert-env-or-die TEST_OUTPUT
 
-rm -fr "$BUILD"/*
+rm -f "$BUILD_OUTPUT" "$TEST_OUTPUT"
 
