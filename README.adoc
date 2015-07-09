@@ -1,5 +1,9 @@
-Nakker image:https://img.shields.io/github/release/formwork-io/nakker.svg[release] image:https://img.shields.io/github/license/formwork-io/nakker.svg[license]
-==============================================================================================================================================================
+Nakker
+======
+
+image:https://img.shields.io/github/release/formwork-io/nakker.svg[release]
+image:https://img.shields.io/github/license/formwork-io/nakker.svg[license]
+image:https://img.shields.io/travis/nbargnesi/nakker/next.svg[build]
 
 Nakker is an agnostic relay for interconnecting disparate software components.
 It abstracts the useful parts of distributed systems to enable flexible
