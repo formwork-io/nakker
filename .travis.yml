@@ -1,7 +1,9 @@
 # see http://docs.travis-ci.com/user/installing-dependencies
 before_install:
   - sudo apt-get update -qq
-  - sudo apt-get install -y libzmq-dev
+  - sudo apt-get install -y libsodium-dev
+  - ./scripts/install-zeromq.sh
+
 
 language: go
 script: scripts/03-test.sh
