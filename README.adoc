@@ -1,57 +1,30 @@
-greenline
----------
+Greenline image:https://img.shields.io/github/release/formwork-io/greenline.svg[release] image:https://img.shields.io/github/license/formwork-io/greenline.svg[license] 
+=======================================================================================================================================================================
 
-Greenline is an agnostic relay for interconnecting disparate components. It is
-named after the oldest subway line of the same name in Boston, Massachusetts.
+link:https://github.com/formwork-io/greenline[Greenline] is an agnostic relay
+for interconnecting disparate software components. It abstracts the useful
+parts of distributed systems to enable flexible patterns in designing,
+scaling, and maintaining advanced system architectures.
 
+Software systems of all sizes can benefit from an integrated
+link:https://github.com/formwork-io/greenline[Greenline] (or similar
+technologies). The challenges around the growth and evolution of software,
+previously difficult by nature, become tractable as the design
+unburdens the designer. These same challenges become trivial.
 
-usage
------
+Some common examples where a
+link:https://github.com/formwork-io/greenline[Greenline]-infused design can
+benefit:
 
-- Using environment variables:
+* Bridging to legacy software
+* Interconnecting components regardless of programming languages
+* Enabling microservices
+* Addressing scaling concerns
 
-[source,bash]
-----
-# environment variables (zero-based index)
-export GL_RAIL_0_NAME="broadcast"
-export GL_RAIL_0_PATTERN="pub/sub"
-export GL_RAIL_0_INGRESS_PORT=5000
-export GL_RAIL_0_EGRESS_PORT=6000
-export GL_RAIL_1_NAME="conversation"
-export GL_RAIL_1_PATTERN="req/rep"
-export GL_RAIL_1_INGRESS_PORT=7000
-export GL_RAIL_1_EGRESS_PORT=8000
+The Name
+--------
 
-./greenline
-----
+Greenline is named after the oldest subway line of the same name in
+Boston, Massachusetts. 
 
-- Using TOML configuration file:
-
-[source,bash]
-----
-./greenline rail-config.toml
-----
-
-
-configuration file
-------------------
-
-- https://github.com/toml-lang/toml[TOML] format
-
-- example
-
-[source,toml]
-----
-[[rail]]
-name     = "broadcast"
-pattern  = "pub/sub"
-ingress  = 5000
-egress   = 6000
-
-[[rail]]
-name     = "conversation"
-pattern  = "req/rep"
-ingress  = 7000
-egress   = 8000
-----
-
+image:extra/images/greenline-128.png[]

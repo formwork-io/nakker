@@ -11,11 +11,10 @@ source "$DIR"/env.sh || exit 1
 cd "$DIR" || exit 1
 
 CMD="go build"
-which colorgo >/dev/null
+which colorgo >/dev/null 2>&1
 if [ $? -eq 0 ]; then
     echo "[BUILDING]"
     CMD="colorgo build"
 fi
-mkdir -p build || exit 1
 $CMD $GL_BUILD_ARGS && echo "[COMPLETE]"
 

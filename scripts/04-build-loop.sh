@@ -15,7 +15,6 @@ which colorgo >/dev/null
 if [ $? -eq 0 ]; then
     CMD="colorgo build"
 fi
-mkdir -p build || exit 1
 while true; do
     "$GOSH_SCRIPTS"/gate || exit 1
     clear
