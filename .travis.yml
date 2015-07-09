@@ -1,0 +1,2 @@
+language: go
+script: scripts/03-test.sh
