@@ -1,3 +1,6 @@
+# see http://docs.travis-ci.com/user/workers/container-based-infrastructure/
+sudo: true
+
 # see http://docs.travis-ci.com/user/installing-dependencies
 before_install:
   - ./scripts/install-libsodium.sh
