@@ -9,6 +9,8 @@ Nakker is an agnostic relay for interconnecting disparate software components.
 It abstracts the useful parts of distributed systems to enable flexible
 patterns in designing, scaling, and maintaining advanced system architectures.
 
+See http://formwork-io.github.io/nakker[Nakker Overview] for more.
+
 The Name
 --------
 
