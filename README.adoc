@@ -5,7 +5,6 @@ Nakker is an agnostic relay for interconnecting disparate software components.
 It abstracts the useful parts of distributed systems to enable flexible
 patterns in designing, scaling, and maintaining advanced system architectures.
 
-[icon="./extra/images/greenline-128.png"]
 WARNING: What lovely war.
 
 The Name
