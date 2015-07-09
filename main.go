@@ -1,45 +1,43 @@
-// Permission is hereby granted, free of charge, to any person
-// obtaining a copy of this software and associated documentation
-// files (the "Software"), to deal in the Software without
-// restriction, including without limitation the rights to use,
-// copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the
-// Software is furnished to do so, subject to the following
-// conditions:
-// The above copyright notice and this permission notice shall be
-// included in all copies or substantial portions of the Software.
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-// OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-// OTHER DEALINGS IN THE SOFTWARE.
-//
-// See http://formwork-io.github.io/ for more.
+/*
+Permission is hereby granted, free of charge, to any person
+obtaining a copy of this software and associated documentation
+files (the "Software"), to deal in the Software without
+restriction, including without limitation the rights to use,
+copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the
+Software is furnished to do so, subject to the following
+conditions:
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
+
+See http://formwork-io.github.io/ for more.
+*/
 
 package main
 
-import "fmt"
-import zmq "github.com/pebbe/zmq4"
 import "os"
 import "os/signal"
+import "fmt"
+import "strings"
 import "syscall"
 import "time"
+import zmq "github.com/pebbe/zmq4"
 import . "github.com/formwork-io/greenline/internal"
-
-const (
-	MsgEvent = 1 << iota
-	BinEvent = 1 << iota
-)
 
 func main() {
 	info := "greenline: notoriously unreliable\n" +
 		"https://github.com/formwork-io/greenline\n" +
 		"This is free software with ABSOLUTELY NO WARRANTY."
 	fmt.Printf("%s\n--\n", info)
-	var rails []rail
+	var rails []Rail
 	if len(os.Args) == 2 {
 		var err error
 		rails, err = ReadConfigFile(os.Args[1])
@@ -55,28 +53,33 @@ func main() {
 	}
 	pprint("configuring %d rails", len(rails))
 
-	socket_pairs := make(map[*zmq.Socket]*zmq.Socket)
-	socket_names := make(map[*zmq.Socket]string)
+	socketPairs := make(map[*zmq.Socket]*zmq.Socket)
+	socketNames := make(map[*zmq.Socket]string)
 	poller := zmq.NewPoller()
+
+	railmsg := "%s protocol %s, %d -> %d"
+
 	for _, rail := range rails {
-		pprint("starting rail %s as %s", rail.Name, rail.Pattern)
 
 		var ingress *zmq.Socket
 		var egress *zmq.Socket
-		switch rail.Pattern {
-		case "pubsub":
+		switch rail.Protocol {
+		case "broadcast":
 			ingress, egress = railToPubSub(&rail, poller)
-		case "reqrep":
+		case "request":
 			ingress, egress = railToRouterDealer(&rail, poller)
 		default:
-			die("The pattern %s is not valid.", rail.Pattern)
+			die("The protocol %s is not valid.", rail.Protocol)
 		}
 
-		socket_pairs[ingress] = egress
-		socket_names[ingress] = fmt.Sprintf("%s (ingress)", rail.Name)
+		titledProtocol := strings.Title(rail.Protocol)
+		pprint(railmsg, titledProtocol, rail.Name, rail.Ingress, rail.Egress)
 
-		socket_pairs[egress] = ingress
-		socket_names[egress] = fmt.Sprintf("%s (egress)", rail.Name)
+		socketPairs[ingress] = egress
+		socketNames[ingress] = fmt.Sprintf("%s (ingress)", rail.Name)
+
+		socketPairs[egress] = ingress
+		socketNames[egress] = fmt.Sprintf("%s (egress)", rail.Name)
 
 		defer ingress.Close()
 		defer egress.Close()
@@ -123,7 +126,7 @@ func main() {
 		case reloadOp := <-reloadchan:
 			if reloadOp&BinReload == BinReload {
 				pprint("new binary available, restarting greenline")
-				for key, value := range socket_pairs {
+				for key, value := range socketPairs {
 					key.Close()
 					value.Close()
 				}
@@ -132,7 +135,7 @@ func main() {
 				restart()
 			} else if reloadOp&ConfigReload == ConfigReload {
 				pprint("new configuration available, restarting greenline")
-				for key, value := range socket_pairs {
+				for key, value := range socketPairs {
 					key.Close()
 					value.Close()
 				}
@@ -152,8 +155,8 @@ func main() {
 
 			for _, polled := range sockets {
 				socket := polled.Socket
-				paired_socket := socket_pairs[socket]
-				name := socket_names[socket]
+				pairedSocket := socketPairs[socket]
+				name := socketNames[socket]
 
 				pprint("processing message for %s", name)
 				for {
@@ -166,9 +169,9 @@ func main() {
 						die("failed on receive more: %s", err.Error())
 					}
 					if more {
-						paired_socket.Send(msg, zmq.SNDMORE)
+						pairedSocket.Send(msg, zmq.SNDMORE)
 					} else {
-						paired_socket.Send(msg, 0)
+						pairedSocket.Send(msg, 0)
 						break
 					}
 				}
@@ -178,7 +181,7 @@ func main() {
 	}
 }
 
-func railToPubSub(rail *rail, poller *zmq.Poller) (ingress *zmq.Socket, egress *zmq.Socket) {
+func railToPubSub(rail *Rail, poller *zmq.Poller) (ingress *zmq.Socket, egress *zmq.Socket) {
 	// CREATE EACH SOCKET...
 	ingress = newSocket(zmq.SUB)
 	ingress.SetSubscribe("")
@@ -194,7 +197,7 @@ func railToPubSub(rail *rail, poller *zmq.Poller) (ingress *zmq.Socket, egress *
 	return
 }
 
-func railToRouterDealer(rail *rail, poller *zmq.Poller) (ingress *zmq.Socket, egress *zmq.Socket) {
+func railToRouterDealer(rail *Rail, poller *zmq.Poller) (ingress *zmq.Socket, egress *zmq.Socket) {
 	// CREATE EACH SOCKET...
 	ingress = newSocket(zmq.ROUTER)
 
@@ -220,12 +223,10 @@ func newSocket(ztype zmq.Type) (socket *zmq.Socket) {
 
 func bind(socket *zmq.Socket, transport string, address string, port int) {
 	endpoint := fmt.Sprintf("%s://%s:%d", transport, address, port)
-	out("Binding socket %d...", port)
 	err := socket.Bind(endpoint)
 	if err != nil {
 		die("failed binding %s: %s", endpoint, err.Error())
 	}
-	fmt.Println("done.")
 }
 
 func makeMsg(msg string, args ...interface{}) string {
