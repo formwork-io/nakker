@@ -98,7 +98,7 @@ func reloader(reload chan int) {
 func restart() (err error) {
 	err = syscall.Exec(os.Args[0], os.Args, os.Environ())
 	if err != nil {
-		die("failed restarting greenline")
+		die("failed restarting nakker")
 	}
 	return
 }

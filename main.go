@@ -30,11 +30,11 @@ import "strings"
 import "syscall"
 import "time"
 import zmq "github.com/pebbe/zmq4"
-import . "github.com/formwork-io/greenline/internal"
+import . "github.com/formwork-io/nakker/internal"
 
 func main() {
-	info := "greenline: notoriously unreliable\n" +
-		"https://github.com/formwork-io/greenline\n" +
+	info := "nakker: notoriously unreliable\n" +
+		"https://github.com/formwork-io/nakker\n" +
 		"This is free software with ABSOLUTELY NO WARRANTY."
 	fmt.Printf("%s\n--\n", info)
 	var rails []Rail
@@ -85,7 +85,7 @@ func main() {
 		defer egress.Close()
 	}
 
-	pprint("greenline alive")
+	pprint("nakker alive")
 	exitchan := make(chan os.Signal, 0)
 	signal.Notify(exitchan, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
 	go func() {
@@ -120,12 +120,12 @@ func main() {
 			<-pollchan
 		}
 	}()
-	pprint("greenline ready")
+	pprint("nakker ready")
 	for {
 		select {
 		case reloadOp := <-reloadchan:
 			if reloadOp&BinReload == BinReload {
-				pprint("new binary available, restarting greenline")
+				pprint("new binary available, restarting nakker")
 				for key, value := range socketPairs {
 					key.Close()
 					value.Close()
@@ -134,7 +134,7 @@ func main() {
 				// exec or die
 				restart()
 			} else if reloadOp&ConfigReload == ConfigReload {
-				pprint("new configuration available, restarting greenline")
+				pprint("new configuration available, restarting nakker")
 				for key, value := range socketPairs {
 					key.Close()
 					value.Close()
@@ -230,7 +230,7 @@ func bind(socket *zmq.Socket, transport string, address string, port int) {
 }
 
 func makeMsg(msg string, args ...interface{}) string {
-	const layout = "%d%02d%02d-%02d-%02d-%02d greenline[%d]: %s"
+	const layout = "%d%02d%02d-%02d-%02d-%02d nakker[%d]: %s"
 	now := time.Now()
 	year := now.Year()
 	month := now.Month()

@@ -18,7 +18,7 @@ git tag v$GL_VERSION || exit 1
 
 github-release release \
     --user formwork-io \
-    --repo greenline \
+    --repo nakker \
     --tag v$GL_VERSION \
     --name "$GL_NAME" \
     --description "Greenline v$GL_VERSION binaries for Linux and OS X"

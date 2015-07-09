@@ -2,7 +2,7 @@
 
 # The next three lines are for the go shell.
 export SCRIPT_NAME="run"
-export SCRIPT_HELP="Runs greenline."
+export SCRIPT_HELP="Runs nakker"
 [[ "$GOGO_GOSH_SOURCE" -eq 1 ]] && return 0
 
 # Normal script execution starts here.
@@ -10,5 +10,5 @@ DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"/../
 source "$DIR"/env.sh || exit 1
 cd "$DIR" || exit 1
 
-$BUILD/greenline
+$BUILD/nakker
 

@@ -10,7 +10,7 @@ DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"/../
 source "$DIR"/env.sh || exit 1
 cd "$DIR" || exit 1
 
-if [ ! -x "$BUILD/greenline" ]; then
+if [ ! -x "$BUILD/nakker" ]; then
     echo "no build in $BUILD" >&2
     exit 1
 fi
@@ -31,7 +31,7 @@ fi
 
 github-release upload \
     --user formwork-io \
-    --repo greenline \
+    --repo nakker \
     --tag v$GL_VERSION \
-    --name "greenline-$PLAT-amd64" --file build/greenline
+    --name "nakker-$PLAT-amd64" --file build/nakker
 
