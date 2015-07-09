@@ -1,10 +1,12 @@
 # see http://docs.travis-ci.com/user/installing-dependencies
 before_install:
-  - sudo apt-get update -qq
-  - sudo apt-get install -y libsodium-dev
+  - ./scripts/install-libsodium.sh
   - ./scripts/install-zeromq.sh
 
-
+# see http://docs.travis-ci.com/user/languages/go/
 language: go
+
 script: scripts/03-test.sh
+
+# vim: ts=2:sw=2 :                                                         
 
