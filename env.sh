@@ -33,13 +33,14 @@ default GL_RAIL_3_EGRESS        9009
 
 ### PATHS ###
 default BUILD           "$DIR"/build
+default BUILD_OUTPUT    "$BUILD/nakker"
 default TEST_OUTPUT     "$BUILD/tests"
 
 ### GOLANG ###
-default GL_BUILD_ARGS   "-o $BUILD/greenline"
+default GL_BUILD_ARGS   "-o $BUILD_OUTPUT"
 default GL_INSTALL_ARGS ""
 
 ### THE GO SHELL ###
 default GOSH_SCRIPTS    "$DIR"/scripts
-default GOSH_PROMPT     "gosh \e[0;32mgreenline\e[0m (?|#|#?)> "
+default GOSH_PROMPT     "gosh \e[0;31mnakker\e[0m (?|#|#?)> "
 
