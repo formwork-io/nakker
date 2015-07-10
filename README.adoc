@@ -14,4 +14,4 @@ See http://formwork-io.github.io/nakker[Nakker Overview] for more.
 The Name
 --------
 
-Nakker is a word root used in the Inuit language meaning fast.
+Nakker is a word root in the Inuit language used to indicate speed.
